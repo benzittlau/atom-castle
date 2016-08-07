@@ -1,0 +1,55 @@
+(function() {
+  var closestPackage, fs, isWindows, path, selectedTest, util;
+
+  fs = require('fs');
+
+  path = require('path');
+
+  util = require('util');
+
+  selectedTest = require('./selected-test');
+
+  isWindows = /^win/.test(process.platform);
+
+  exports.find = function(editor) {
+    var mochaBinary, mochaCommand, root;
+    root = closestPackage(editor.getPath());
+    if (root) {
+      mochaCommand = isWindows ? 'mocha.cmd' : 'mocha';
+      mochaBinary = path.join(root, 'node_modules', '.bin', mochaCommand);
+      if (!fs.existsSync(mochaBinary)) {
+        mochaBinary = 'mocha';
+      }
+      return {
+        root: root,
+        test: path.relative(root, editor.getPath()),
+        grep: selectedTest.fromEditor(editor),
+        mocha: mochaBinary
+      };
+    } else {
+      return {
+        root: path.dirname(editor.getPath()),
+        test: path.basename(editor.getPath()),
+        grep: selectedTest.fromEditor(editor),
+        mocha: 'mocha'
+      };
+    }
+  };
+
+  closestPackage = function(folder) {
+    var pkg;
+    pkg = path.join(folder, 'package.json');
+    if (fs.existsSync(pkg)) {
+      return folder;
+    } else if (folder === '/') {
+      return null;
+    } else {
+      return closestPackage(path.dirname(folder));
+    }
+  };
+
+}).call(this);
+
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAiZmlsZSI6ICIiLAogICJzb3VyY2VSb290IjogIiIsCiAgInNvdXJjZXMiOiBbCiAgICAiL1VzZXJzL2J6aXR0bGF1Ly5hdG9tL3BhY2thZ2VzL21vY2hhLXRlc3QtcnVubmVyL2xpYi9jb250ZXh0LmNvZmZlZSIKICBdLAogICJuYW1lcyI6IFtdLAogICJtYXBwaW5ncyI6ICJBQUFBO0FBQUEsTUFBQSx1REFBQTs7QUFBQSxFQUFBLEVBQUEsR0FBTyxPQUFBLENBQVEsSUFBUixDQUFQLENBQUE7O0FBQUEsRUFDQSxJQUFBLEdBQU8sT0FBQSxDQUFRLE1BQVIsQ0FEUCxDQUFBOztBQUFBLEVBRUEsSUFBQSxHQUFPLE9BQUEsQ0FBUSxNQUFSLENBRlAsQ0FBQTs7QUFBQSxFQUdBLFlBQUEsR0FBZSxPQUFBLENBQVEsaUJBQVIsQ0FIZixDQUFBOztBQUFBLEVBSUEsU0FBQSxHQUFZLE1BQVUsQ0FBQyxJQUFYLENBQWdCLE9BQU8sQ0FBQyxRQUF4QixDQUpaLENBQUE7O0FBQUEsRUFNQSxPQUFPLENBQUMsSUFBUixHQUFlLFNBQUMsTUFBRCxHQUFBO0FBQ2IsUUFBQSwrQkFBQTtBQUFBLElBQUEsSUFBQSxHQUFPLGNBQUEsQ0FBZSxNQUFNLENBQUMsT0FBUCxDQUFBLENBQWYsQ0FBUCxDQUFBO0FBQ0EsSUFBQSxJQUFHLElBQUg7QUFDRSxNQUFBLFlBQUEsR0FBa0IsU0FBSCxHQUFrQixXQUFsQixHQUFtQyxPQUFsRCxDQUFBO0FBQUEsTUFDQSxXQUFBLEdBQWMsSUFBSSxDQUFDLElBQUwsQ0FBVSxJQUFWLEVBQWdCLGNBQWhCLEVBQWdDLE1BQWhDLEVBQXdDLFlBQXhDLENBRGQsQ0FBQTtBQUVBLE1BQUEsSUFBRyxDQUFBLEVBQU0sQ0FBQyxVQUFILENBQWMsV0FBZCxDQUFQO0FBQ0UsUUFBQSxXQUFBLEdBQWMsT0FBZCxDQURGO09BRkE7YUFJQTtBQUFBLFFBQUEsSUFBQSxFQUFNLElBQU47QUFBQSxRQUNBLElBQUEsRUFBTSxJQUFJLENBQUMsUUFBTCxDQUFjLElBQWQsRUFBb0IsTUFBTSxDQUFDLE9BQVAsQ0FBQSxDQUFwQixDQUROO0FBQUEsUUFFQSxJQUFBLEVBQU0sWUFBWSxDQUFDLFVBQWIsQ0FBd0IsTUFBeEIsQ0FGTjtBQUFBLFFBR0EsS0FBQSxFQUFPLFdBSFA7UUFMRjtLQUFBLE1BQUE7YUFVRTtBQUFBLFFBQUEsSUFBQSxFQUFNLElBQUksQ0FBQyxPQUFMLENBQWEsTUFBTSxDQUFDLE9BQVAsQ0FBQSxDQUFiLENBQU47QUFBQSxRQUNBLElBQUEsRUFBTSxJQUFJLENBQUMsUUFBTCxDQUFjLE1BQU0sQ0FBQyxPQUFQLENBQUEsQ0FBZCxDQUROO0FBQUEsUUFFQSxJQUFBLEVBQU0sWUFBWSxDQUFDLFVBQWIsQ0FBd0IsTUFBeEIsQ0FGTjtBQUFBLFFBR0EsS0FBQSxFQUFPLE9BSFA7UUFWRjtLQUZhO0VBQUEsQ0FOZixDQUFBOztBQUFBLEVBdUJBLGNBQUEsR0FBaUIsU0FBQyxNQUFELEdBQUE7QUFDZixRQUFBLEdBQUE7QUFBQSxJQUFBLEdBQUEsR0FBTSxJQUFJLENBQUMsSUFBTCxDQUFVLE1BQVYsRUFBa0IsY0FBbEIsQ0FBTixDQUFBO0FBQ0EsSUFBQSxJQUFHLEVBQUUsQ0FBQyxVQUFILENBQWMsR0FBZCxDQUFIO2FBQ0UsT0FERjtLQUFBLE1BRUssSUFBRyxNQUFBLEtBQVUsR0FBYjthQUNILEtBREc7S0FBQSxNQUFBO2FBR0gsY0FBQSxDQUFlLElBQUksQ0FBQyxPQUFMLENBQWEsTUFBYixDQUFmLEVBSEc7S0FKVTtFQUFBLENBdkJqQixDQUFBO0FBQUEiCn0=
+
+//# sourceURL=/Users/bzittlau/.atom/packages/mocha-test-runner/lib/context.coffee
