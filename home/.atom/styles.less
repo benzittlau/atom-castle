@@ -31,6 +31,15 @@ atom-text-editor::shadow .cursor {
   // border-color: red;
 }
 
+// Make the resize handle visible
+atom-pane-resize-handle {
+  background-color: #333333;
+  &:hover {
+    background-color: #555555;
+  }
+}
+
+
 /*
  * Minimap Highlight Selected Rules
  * https://atom.io/packages/minimap-highlight-selected
@@ -52,4 +61,27 @@ atom-text-editor[with-minimap]::shadow .vertical-scrollbar {
 atom-text-editor atom-text-editor-minimap::shadow .minimap-visible-area::after,
 atom-text-editor::shadow atom-text-editor-minimap::shadow .minimap-visible-area::after {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+/* LINTER MODIFICATIONS
+ *
+ * Deal with the fact that linter-ruby uses a syntax-error type that is
+ * not natively supported by the linter packge.  Added for linter v1.11.16,
+ * and it looks like the later versions might be removing styling from the
+ * package so this could possibly be removed later
+ */
+atom-text-editor::shadow .linter-highlight, .linter-highlight{
+  &.syntax-error {
+    &:not(.line-number){
+      background-color: @background-color-error;
+      color: white;
+    }
+    .linter-gutter{
+      color: @background-color-error;
+    }
+    .region {
+      border-bottom: 1px dashed @background-color-error;
+    }
+  }
 }
